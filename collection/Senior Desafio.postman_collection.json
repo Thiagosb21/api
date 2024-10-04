@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "1d01dd46-0f08-450a-9f5d-e60b42819cbc",
+		"name": "Senior Desafio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13272552"
+	},
+	"item": [
+		{
+			"name": "Cadastro hospede",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Thiago Seara Barce\",\r\n    \"telefone\": \"96270909\",\r\n    \"cpf\": \"06772563964\",\r\n    \"carro\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hospedes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reserva hospede",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"hospede\": {\r\n        \"id_hospede\": 1\r\n    },\r\n    \"dataReserva\": \"04/10/2024\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/reservas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reservas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CheckIn",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/reservas/checkin/6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reservas",
+						"checkin",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CheckOut",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/reservas/checkout/6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reservas",
+						"checkout",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca sem CheckIn",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hospedes/sem-checkin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes",
+						"sem-checkin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca sem CheckOut",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hospedes/sem-checkout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes",
+						"sem-checkout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca por nome",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hospedes/buscar/nome?nome=Thiago Seara Barce",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes",
+						"buscar",
+						"nome"
+					],
+					"query": [
+						{
+							"key": "nome",
+							"value": "Thiago Seara Barce"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca por CPF",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hospedes/buscar/cpf?cpf=06772563964",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes",
+						"buscar",
+						"cpf"
+					],
+					"query": [
+						{
+							"key": "cpf",
+							"value": "06772563964"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca por telefone",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hospedes/buscar/telefone?telefone=96270909",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hospedes",
+						"buscar",
+						"telefone"
+					],
+					"query": [
+						{
+							"key": "telefone",
+							"value": "96270909"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

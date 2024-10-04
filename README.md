@@ -19,6 +19,8 @@ Além disso, foram realizados testes unitários com as bibliotecas JUnit e Mocki
 - CheckOut
 
 ## Instalação
+Esta disponibilizado dentro do projeto na pasta collection um arquivo para realizar as chamadas das funcionalidades.
+
 
 Instruções sobre como instalar o projeto.
 
