@@ -2,15 +2,13 @@ package com.seniordesafio.api.services;
 
 import com.seniordesafio.api.models.Hospede;
 import com.seniordesafio.api.models.Reserva;
-import com.seniordesafio.api.repositories.ReservaRepository;
 import com.seniordesafio.api.repositories.HospedeRepository;
+import com.seniordesafio.api.repositories.ReservaRepository;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
@@ -23,8 +21,15 @@ public class ReservaService {
     @Autowired
     private HospedeRepository hospedeRepository;
 
+    @Setter
+    private Clock clock;
+
+    public ReservaService() {
+        this.clock = Clock.systemDefaultZone();
+    }
+
     public Reserva reserva(Reserva reserva) {
-        Optional<Hospede> hospede = hospedeRepository.findById(reserva.getHospede().getId());
+        Optional<Hospede> hospede = hospedeRepository.findById(reserva.getHospede().getId_hospede());
 
         reserva.setCheckIn(false);
         reserva.setCheckOut(false);
@@ -35,13 +40,13 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
-    public String checkIn(Long id) throws Exception {
+    public String checkIn(Reserva reserva) throws Exception {
         try {
-            Reserva reserva = reservaRepository.findById(id).orElseThrow(() -> new Exception("Reserva não encontrada"));
+            Reserva reservaRetorno = reservaRepository.findById(reserva.getId_reserva())
+                    .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+            LocalTime agora = LocalTime.now(clock);
 
-            LocalTime agora = LocalTime.now();
-
-            if (reserva.isCheckIn()) {
+            if (reservaRetorno.isCheckIn()) {
                 return "Check-in já cadastrado!";
             }
 
@@ -49,52 +54,62 @@ public class ReservaService {
                 return "Alerta: Check-in só pode ser realizado após as 14h!";
             }
 
-            reserva.setDataCheckIn(LocalDateTime.now());
-            reserva.setCheckIn(true);
-            reservaRepository.save(reserva);
+            reservaRetorno.setDataCheckIn(reserva.getDataCheckIn());
+            reservaRetorno.setCheckIn(true);
+            reservaRepository.save(reservaRetorno);
 
-            return String.format("Check-in realizado com sucesso! Data de Check-in: %s", reserva.getFormattedDataCheckIn());
-
+            return "Check-in realizado com sucesso!";
         } catch (Exception e) {
             return "Erro ao realizar o check-in: " + e.getMessage();
         }
     }
 
 
-    public String checkOut(Long id) {
-        Reserva reserva = reservaRepository.findById(id).orElseThrow();
+    public String checkOut(Reserva reserva) {
+        Reserva reservaRetorno = reservaRepository.findById(reserva.getId_reserva()).orElseThrow();
 
-        if (reserva.isCheckOut()) {
+        if (reservaRetorno.isCheckOut()) {
             return "Check-out já realizado";
         }
 
-        reserva.setDataCheckOut(LocalDateTime.now());
-        reserva.setCheckOut(true);
+        reservaRetorno.setDataCheckOut(reserva.getDataCheckOut());
+        reservaRetorno.setCheckOut(true);
 
-        double totalDiaria = calcularValorDiaria(reserva);
-        double totalEstac = calcularTaxaEstacionamento(reserva);
+        double totalDiaria = calcularValorDiaria(reservaRetorno);
+        double totalEstac = calcularTaxaEstacionamento(reservaRetorno);
+
+        LocalDate dataReferencia = LocalDate.now();
+        LocalDateTime dataHoraLimite = dataReferencia.atTime(12, 0);
 
         double totalHora = 0;
-        if (LocalTime.now().isAfter(LocalTime.of(12, 0))) {
-            totalHora = (reserva.getDataCheckOut().getDayOfWeek() == DayOfWeek.SATURDAY || reserva.getDataCheckOut().getDayOfWeek() == DayOfWeek.SUNDAY) ? 90 : 60;
+
+        if (reservaRetorno.getDataCheckOut().isAfter(dataHoraLimite)) {
+            if (reservaRetorno.getDataCheckOut().getDayOfWeek() == DayOfWeek.SATURDAY || reservaRetorno.getDataCheckOut().getDayOfWeek() == DayOfWeek.SUNDAY) {
+                totalHora = 90;
+            } else {
+                totalHora = 60;
+            }
         }
 
         double totalCheckOut = totalDiaria + totalEstac + totalHora;
 
-        reservaRepository.save(reserva);
+        reservaRepository.save(reservaRetorno);
 
-        return String.format("Check-out realizado com sucesso!\n" + "Detalhes do pagamento:\n" + "- Diárias: R$ %.2f\n" + "- Estacionamento: R$ %.2f\n" + "- Check-out pós 12:00: R$ %.2f\n" + "----------------------------------\n" + "Total a pagar: R$ %.2f\n" + "Data de Check-out: %s", totalDiaria, totalEstac, totalHora, totalCheckOut, reserva.getFormattedDataCheckOut());
+        return String.format("Check-out realizado com sucesso!\n" + "Detalhes do pagamento:\n" + "- Diárias: R$ %.2f\n" + "- Estacionamento: R$ %.2f\n" + "- Check-out pós 12:00: R$ %.2f\n" + "----------------------------------\n" + "Total a pagar: R$ %.2f\n" + "Data de Check-out: %s", totalDiaria, totalEstac, totalHora, totalCheckOut, reservaRetorno.getFormattedDataCheckOut());
     }
 
 
     private double calcularValorDiaria(Reserva reserva) {
-        LocalDate dataHoje = LocalDate.now();
-        // deveria ser (getDataReserva, dataHoje) mas como o o checkout ta sendo feito antes do check in ele nao pode ser neagtivo
-        long dias = ChronoUnit.DAYS.between(dataHoje, reserva.getDataReserva());
+       long dias = ChronoUnit.DAYS.between(reserva.getDataCheckIn(), reserva.getDataCheckOut());
+        LocalTime horaCheckIn = reserva.getDataCheckIn().toLocalTime();
+        if (horaCheckIn.isAfter(LocalTime.of(12, 0))) {
+            dias += 1;
+        }
+
         double valorDiaria = 0;
 
         for (long i = 0; i < dias; i++) {
-            LocalDate data = reserva.getDataReserva().plusDays(i);
+            LocalDate data = LocalDate.from(reserva.getDataCheckIn().plusDays(i));
             if (data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 valorDiaria += 180.0;
             } else {
@@ -107,11 +122,16 @@ public class ReservaService {
 
     private double calcularTaxaEstacionamento(Reserva reserva) {
         if (reserva.getHospede().isCarro()) {
-            LocalDate dataHoje = LocalDate.now();
             double taxa = 0;
 
-            for (long i = 0; i < ChronoUnit.DAYS.between(dataHoje, reserva.getDataReserva()); i++) {
-                LocalDate data = reserva.getDataReserva().plusDays(i);
+            long dias = ChronoUnit.DAYS.between(reserva.getDataCheckIn(), reserva.getDataCheckOut());
+            LocalTime horaCheckIn = reserva.getDataCheckIn().toLocalTime();
+            if (horaCheckIn.isAfter(LocalTime.of(12, 0))) {
+                dias += 1;
+            }
+
+            for (long i = 0; i < dias; i++) {
+                LocalDate data = LocalDate.from(reserva.getDataCheckIn().plusDays(i));
                 if (data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY) {
                     taxa += 20.0;
                 } else {
@@ -122,25 +142,4 @@ public class ReservaService {
         }
         return 0;
     }
-
-//    public double calcularValorTotal(Reserva reserva) {
-//
-//        double total = 0.0;
-//
-//        total += calcularValorDiaria(reserva);
-//        total += calcularTaxaEstacionamento(reserva);
-//
-//        //ver necessidade desse if
-//        if (reserva.isCheckOut()) {
-//            if (LocalTime.now().isAfter(LocalTime.of(12, 0))) {
-//                if (reserva.getDataCheckOut().getDayOfWeek() == DayOfWeek.SATURDAY || reserva.getDataCheckOut().getDayOfWeek() == DayOfWeek.SUNDAY) {
-//                    total += 90;
-//                } else {
-//                    total += 60;
-//                }
-//            }
-//        }
-//
-//        return total;
-//    }
 }

@@ -19,7 +19,7 @@ public class HospedeController {
     private HospedeRepository hospedeRepository;
 
     @PostMapping
-    public ResponseEntity<Hospede>  cadastrarHospede(@Valid @RequestBody Hospede hospede) {
+    public ResponseEntity<Hospede> cadastrarHospede(@Valid @RequestBody Hospede hospede) {
         Hospede hospedeResult = hospedeRepository.save(hospede);
         return ResponseEntity.status(HttpStatus.CREATED).body(hospedeResult);
     }
@@ -32,5 +32,23 @@ public class HospedeController {
     @GetMapping("/sem-checkout")
     public List<Hospede> buscarHospedesSemCheckout() {
         return hospedeRepository.findDistinctByReservas_CheckOutFalse();
+    }
+
+    @GetMapping("/buscar/nome")
+    public ResponseEntity<List<Hospede>> buscarPorNome(@RequestParam String nome) {
+        List<Hospede> clientes = hospedeRepository.findByNome(nome);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/buscar/cpf")
+    public ResponseEntity<List<Hospede>> buscarPorCpf(@RequestParam String cpf) {
+        List<Hospede> clientes = hospedeRepository.findByCpf(cpf);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/buscar/telefone")
+    public ResponseEntity<List<Hospede>> buscarPorTelefone(@RequestParam String telefone) {
+        List<Hospede> clientes = hospedeRepository.findByTelefone(telefone);
+        return ResponseEntity.ok(clientes);
     }
 }

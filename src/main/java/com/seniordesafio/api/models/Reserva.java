@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_reserva;
 
     @ManyToOne
     @JoinColumn(name = "hospede_id")
@@ -35,9 +35,9 @@ public class Reserva {
     @JsonIgnore
     private boolean checkOut;
 
-    @JsonIgnore
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCheckOut;
-    @JsonIgnore
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCheckIn;
 
     @JsonIgnore

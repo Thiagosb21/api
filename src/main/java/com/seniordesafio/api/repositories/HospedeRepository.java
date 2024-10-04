@@ -8,4 +8,7 @@ import java.util.List;
 public interface HospedeRepository extends JpaRepository<Hospede, Long> {
     List<Hospede> findByReservas_CheckInFalse();
     List<Hospede> findDistinctByReservas_CheckOutFalse();
+    List<Hospede> findByNome(String nome);
+    List<Hospede> findByCpf(String cpf);
+    List<Hospede> findByTelefone(String telefone);
 }

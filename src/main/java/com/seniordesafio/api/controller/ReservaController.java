@@ -22,16 +22,16 @@ public class ReservaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservaResult);
     }
 
-    @PostMapping("/checkin/{id}")
-    public ResponseEntity<String> checkIn(@PathVariable Long id) throws Exception {
-        String checkInResult = service.checkIn(id);
+    @PostMapping("/checkin")
+    public ResponseEntity<String> checkIn(@RequestBody Reserva reserva) throws Exception {
+        String checkInResult = service.checkIn(reserva);
         return ResponseEntity.status(HttpStatus.OK).body(checkInResult);
     }
 
 
-    @PostMapping("/checkout/{id}")
-    public ResponseEntity<String> checkOut(@PathVariable Long id) {
-        String checkOutResult = service.checkOut(id);
+    @PostMapping("/checkout")
+    public ResponseEntity<String> checkOut(@RequestBody Reserva reserva) {
+        String checkOutResult = service.checkOut(reserva);
         return ResponseEntity.status(HttpStatus.OK).body(checkOutResult);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 public class Hospede {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_hospede;
 
     @NotBlank(message = "Nome é obrigatório.")
     private String nome;
