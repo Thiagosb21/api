@@ -67,8 +67,17 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_reserva\": 1,\r\n    \"dataCheckIn\": \"24/10/2024 14:30\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://localhost:8080/reservas/checkin/6",
+					"raw": "http://localhost:8080/reservas/checkin",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -76,8 +85,7 @@
 					"port": "8080",
 					"path": [
 						"reservas",
-						"checkin",
-						"6"
+						"checkin"
 					]
 				}
 			},
@@ -88,8 +96,17 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_reserva\": 3,\r\n    \"dataCheckOut\": \"29/10/2024 14:30\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://localhost:8080/reservas/checkout/6",
+					"raw": "http://localhost:8080/reservas/checkout",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -97,8 +114,7 @@
 					"port": "8080",
 					"path": [
 						"reservas",
-						"checkout",
-						"6"
+						"checkout"
 					]
 				}
 			},
@@ -150,7 +166,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/hospedes/buscar/nome?nome=Thiago Seara Barce",
+					"raw": "http://localhost:8080/hospedes/buscar/nome?nome=Thiago Seara Barcelos",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -164,7 +180,7 @@
 					"query": [
 						{
 							"key": "nome",
-							"value": "Thiago Seara Barce"
+							"value": "Thiago Seara Barcelos"
 						}
 					]
 				}
